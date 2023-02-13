@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50b0cac0c255c414799b6d9da5b608f5, type: 3}
   m_Name: ChunkManager
   m_EditorClassIdentifier: 
-  ViewerPos: {x: 0, y: 0}
+  ViewerPos: {x: -17.231379, y: -6.06984}
+  NoiseOptionsFoldOut: 0
   _chunkSize: {x: 10, y: 10}
   _cellSize: {x: 0.25, y: 0.25}
   _isoLevel: 0.5

@@ -17,5 +17,5 @@ MonoBehaviour:
   _octaves: 4
   _bias: -0.43
   offset: {x: 201.31232, y: 132.1242}
-  _scale: 5
+  _scale: 10
   texture: {fileID: 0}
