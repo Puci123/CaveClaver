@@ -5,7 +5,7 @@ using UnityEngine;
 public class Cell 
 {
     public Vertex LU,LD,RU,RD;
-    private Vector3 MU,ML,MD,MR;
+    private Vertex MU,ML,MD,MR;
 
     private float _isoLevel = 0.5f;
 
@@ -22,18 +22,20 @@ public class Cell
 
      }
 
-     private Vector3 Interpolate(Vertex a, Vertex b)
+     private Vertex Interpolate(Vertex a, Vertex b)
      {
-        if(Mathf.Abs(_isoLevel - a.Value) < 0.0001f) return a.WorldPos;
-        if(Mathf.Abs(_isoLevel - b.Value) < 0.0001f) return b.WorldPos;
-        if(Mathf.Abs(a.Value - b.Value) < 0.0001f) return b.WorldPos;
+        if(Mathf.Abs(_isoLevel - a.Value) < 0.0001f) return a;
+        if(Mathf.Abs(_isoLevel - b.Value) < 0.0001f) return b;
+        if(Mathf.Abs(a.Value - b.Value) < 0.0001f) return   b;
 
         float mu = (_isoLevel - a.Value)/(b.Value - a.Value);
       
-        return new Vector3(
+        Vector3 newPos = new Vector3(
             a.WorldPos.x + mu * (b.WorldPos.x - a.WorldPos.x), 
             a.WorldPos.y + mu * (b.WorldPos.y - a.WorldPos.y),
             a.WorldPos.z);
+
+        return new Vertex(newPos,1f);
      }
 
     public Cell(Vertex lu,Vertex ld,Vertex ru,Vertex rd, float isoLevel)
@@ -45,14 +47,14 @@ public class Cell
 
         _isoLevel = isoLevel;
 
-       MU = Interpolate(LU,RU);
-       ML = Interpolate(LU,LD);
-       MD = Interpolate(LD,RD);
-       MR = Interpolate(RU,RD);
+        MU = Interpolate(LU,RU);
+        ML = Interpolate(LU,LD);
+        MD = Interpolate(LD,RD);
+        MR = Interpolate(RU,RD);
 
     }
 
-    public List<Vector3> Triangluate()
+    public List<Vertex> Triangluate()
     {
         switch (GetCellID())
         {
@@ -62,105 +64,71 @@ public class Cell
             
             // 1 point
             case 1:
-            return Points2Mesh(ML,LU.WorldPos,MU);
+            return new List<Vertex>(){ML,MU,LU};
             break;
              
             case 2:
-            return Points2Mesh(MU,RU.WorldPos,MR);
+            return new List<Vertex>(){MR,MU,RU};
             break;
 
             case 4:
-            return Points2Mesh(MR,RD.WorldPos,MD);
+            return new List<Vertex>(){MR,MD,RD};
             break;
 
             case 8:
-            return Points2Mesh(MD,LD.WorldPos,ML);
+            return new List<Vertex>(){ML,MD,LD};
             break;
 
             // 2 points
             case 3:
-            return Points2Mesh(ML,LU.WorldPos,RU.WorldPos,MR);
+            return new List<Vertex>(){ML,LU,RU,MR};
             break;
             
             case 5:
-            return Points2Mesh(ML,LU.WorldPos,MU,MR,RD.WorldPos,MD);
+            return new List<Vertex>(){ML,LU,MU,MR,RD,MD};
             break;
 
             case 6:
-            return Points2Mesh(MU,RU.WorldPos,RD.WorldPos,MD);
+            return new List<Vertex>(){MU,RU,RD,MD};
             break;
             
             case 9:
-            return Points2Mesh(LU.WorldPos,MU,MD,LD.WorldPos);
+            return new List<Vertex>(){LU,MU,MD,LD};
             break;
 
             case 10:
-            return Points2Mesh(MD,LD.WorldPos,ML,MU,RU.WorldPos,MR);
+            return new List<Vertex>(){MD,LD,ML,MU,RU,MR};
             break;
 
             case 12:
-            return Points2Mesh(LD.WorldPos,ML,MR,RD.WorldPos);
+            return new List<Vertex>(){LD,ML,MR,RD};
             break;
 
             //3 points
             case 7:
-            return Points2Mesh(ML,LU.WorldPos,RU.WorldPos,RD.WorldPos,MD);
+            return new List<Vertex>(){ML,LU,RU,RD,MD};
             break;
 
             case 11:
-            return Points2Mesh(LD.WorldPos,LU.WorldPos,RU.WorldPos,MR,MD);
+            return new List<Vertex>(){LD,LU,RU,MR,MD};
             break;
 
             case 13:
-            return Points2Mesh(LU.WorldPos,MU,MR,RD.WorldPos,LD.WorldPos);
+            return new List<Vertex>(){LU,MU,MR,RD,LD};
             break;
             
             case 14:
-            return Points2Mesh(LD.WorldPos,ML,MU,RU.WorldPos,RD.WorldPos);
+            return new List<Vertex>(){LD,ML,MU,RU,RD};
             break;
 
             // 4 points
             case 15:
-            return Points2Mesh(LU.WorldPos,RU.WorldPos,RD.WorldPos,LD.WorldPos);
+            return new List<Vertex>(){LU,RU,RD,LD};
             break;
 
 
         }
 
         return null;
-    }
-
-    public List<Vector3> Points2Mesh(params Vector3[] points)
-    {
-        List<Vector3> vert = new List<Vector3>();
-
-        if(points.Length >= 3)
-        {
-            vert.Add(points[0]);
-            vert.Add(points[1]);
-            vert.Add(points[2]);
-
-        }
-        if(points.Length >= 4)
-        {
-            vert.Add(points[0]);
-            vert.Add(points[2]);
-            vert.Add(points[3]);
-
-        }
-        if(points.Length >= 5)
-        {
-            vert.Add(points[0]);
-            vert.Add(points[3]);
-            vert.Add(points[4]);
-        }
-        if(points.Length >= 6)
-        {
-            vert.Add(points[0]);
-            vert.Add(points[4]);
-            vert.Add(points[5]);
-        }
-
-        return vert;
     }
 }

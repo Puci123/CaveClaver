@@ -12,8 +12,9 @@ public class Chunk : MonoBehaviour
    [SerializeField] private LayeredPerlinNoise _noise;
    [SerializeField] private bool _drawGizmos = false;
    
-    private Cell[,] _grid;
-    
+    private Vertex[,] _grid;
+    private Cell[,] _cells;
+
     private Vector2Int _gridSize; 
     private List<Vector3> _vertices = new List<Vector3>();
     private List<List<int>> _outlineVertecies = new List<List<int>>();
@@ -27,16 +28,18 @@ public class Chunk : MonoBehaviour
     private Material _material;
 
 
-    private void ConstructTriangle(int a, int b, int c)
-    {
-        _triangles.Add(a);
-        _triangles.Add(b);
-        _triangles.Add(c);
 
-        Triangle triangle = new Triangle(a, b,c);
-        AddTriangleToHashedMap(triangle.aIndex,triangle);
-        AddTriangleToHashedMap(triangle.bIndex,triangle);
-        AddTriangleToHashedMap(triangle.cIndex,triangle);
+    private void ConstructTriangle(Vertex a,Vertex b, Vertex c)
+    {
+        _triangles.Add(a.VertexIndex);
+        _triangles.Add(b.VertexIndex);
+        _triangles.Add(c.VertexIndex);
+
+        Triangle triangle = new Triangle(a.VertexIndex,b.VertexIndex,c.VertexIndex);
+        
+        AddTriangleToHashedMap(a.VertexIndex,triangle);
+        AddTriangleToHashedMap(b.VertexIndex,triangle);
+        AddTriangleToHashedMap(c.VertexIndex,triangle);
 
     }
 
@@ -98,6 +101,37 @@ public class Chunk : MonoBehaviour
         GetComponent<MeshRenderer>().material = material;
     }
 
+    private void AssignVertecies(Vertex[] vert)
+    {
+        foreach (Vertex item in vert)
+        {
+            if(item.VertexIndex == -1)
+            {
+                item.VertexIndex = _vertices.Count;
+                _vertices.Add(item.WorldPos);
+            }
+        }
+    }
+
+    public void Points2Mesh(params Vertex[] points)
+    {
+        
+        if(points.Length >= 3)
+            ConstructTriangle(points[0],points[1],points[2]);
+            
+        if(points.Length >= 4)
+            ConstructTriangle(points[0],points[2],points[3]);
+           
+        if(points.Length >= 5)
+            ConstructTriangle(points[0],points[3],points[4]);
+            
+        if(points.Length >= 6)
+            ConstructTriangle(points[0],points[4],points[5]);
+
+        
+    }
+
+
    public void CreateChunk()
    {
         _vertices.Clear();
@@ -109,33 +143,35 @@ public class Chunk : MonoBehaviour
         _gridSize.y = Mathf.RoundToInt(_chunkSize.y / _cellSize.y) + 1;
         Vector3 centerOffset =  -(_chunkSize / 2);
 
-        _grid = new Cell[_gridSize.x, _gridSize.y];
+        _grid = new Vertex[_gridSize.x, _gridSize.y];
+        _cells = new Cell[_gridSize.x, _gridSize.y];
 
-        for (int y = 0; y < _gridSize.y - 1; y++)
+        //Create grid
+        for (int y = 0; y < _gridSize.y; y++)
+        {
+            for (int x = 0; x < _gridSize.x; x++)
+            {
+                _grid[x,y] = new Vertex(new Vector3(x * _cellSize.x, y * _cellSize.y, 0) + centerOffset, 
+                                        _noise.GetNoiseValue(x * _cellSize.x + transform.position.x, y * _cellSize.y + transform.position.y));
+
+
+            }   
+        }
+
+        //Triangluate
+         for (int y = 0; y < _gridSize.y - 1; y++)
         {
             for (int x = 0; x < _gridSize.x - 1; x++)
             {
-                Vertex ld = new Vertex(new Vector3(x * _cellSize.x, y * _cellSize.y, 0) + centerOffset, _noise.GetNoiseValue(x * _cellSize.x + transform.position.x, y * _cellSize.y + transform.position.y));
-                Vertex lu = new Vertex(new Vector3(x * _cellSize.x, (y  + 1)* _cellSize.y, 0) + centerOffset, _noise.GetNoiseValue(x * _cellSize.x+ transform.position.x, (y  + 1)* _cellSize.y+ transform.position.y));
-                Vertex rd = new Vertex(new Vector3((x + 1) * _cellSize.x, y * _cellSize.y, 0) + centerOffset, _noise.GetNoiseValue((x + 1) * _cellSize.x+ transform.position.x, y * _cellSize.y+ transform.position.y));
-                Vertex ru = new Vertex(new Vector3((x + 1) * _cellSize.x, (y + 1) * _cellSize.y, 0) + centerOffset, _noise.GetNoiseValue((x + 1) * _cellSize.x+ transform.position.x, (y + 1) * _cellSize.y+ transform.position.y));
-
-                _grid[x,y] = new Cell(lu,ld,ru,rd,_isoLevel);
-                List<Vector3> temp = _grid[x,y].Triangluate();
-                int offset = _triangles.Count;
-
-                if(temp != null && temp.Count >= 3)
-                {
-                    for (int i = 0; i < temp.Count; i += 3)
-                    {
-                        _vertices.Add(temp[i]);
-                        _vertices.Add(temp[i + 1]);
-                        _vertices.Add(temp[i + 2]);
-
-
-                        ConstructTriangle(i + offset, i + 1 + offset, i + 2 + offset);
-                    }
+                _cells[x,y] = new Cell(_grid[x,y],_grid[x,y + 1],_grid[x + 1,y],  _grid[x + 1,y + 1], _isoLevel);
+                List<Vertex> vert = _cells[x,y].Triangluate();
+                
+                if(vert != null)
+                { 
+                    AssignVertecies(vert.ToArray());
+                    Points2Mesh(vert.ToArray());
                 }
+
             }   
         }
 
@@ -144,7 +180,7 @@ public class Chunk : MonoBehaviour
 
         GetComponent<MeshFilter>().mesh = _mesh;
 
-        Debug.Log(_triangles.Count);
+        //Debug.Log(_triangles.Count);
 
         _mesh.Clear();
         _mesh.vertices = _vertices.ToArray();
@@ -183,7 +219,7 @@ public class Chunk : MonoBehaviour
                     _outlineVertecies.Add(newOutline);
 
                     FollowOutLine(vetrexIndex, _outlineVertecies.Count - 1);
-                    _outlineVertecies[_outlineVertecies.Count - 1].Add(vetrexIndex);
+                    //_outlineVertecies[_outlineVertecies.Count - 1].Add(vetrexIndex);
                 }
 
             }
@@ -210,8 +246,8 @@ public class Chunk : MonoBehaviour
                 int startIndex = wallVertecies.Count;
                 wallVertecies.Add(_vertices[outline[i]]);       //left top
                 wallVertecies.Add(_vertices[outline[i + 1]]);   //right top
-                wallVertecies.Add(_vertices[outline[i]] + Vector3.forward * wallHeight);       //left bottom
-                wallVertecies.Add(_vertices[outline[i + 1]] + Vector3.forward * wallHeight);   //right bottom
+                wallVertecies.Add(_vertices[outline[i]] - Vector3.forward * wallHeight);       //left bottom
+                wallVertecies.Add(_vertices[outline[i + 1]] - Vector3.forward * wallHeight);   //right bottom
 
 
                 wallTriangle.Add(startIndex + 0);
@@ -250,21 +286,12 @@ public class Chunk : MonoBehaviour
             if(_grid != null && _grid.Length > 0)
             {
                 Gizmos.color = Color.cyan;
-                foreach (Cell cell in _grid)
+                foreach (Vertex vertex in _grid)
                 {
-                    if(cell != null)
+                    if(vertex != null)
                     {
-                        Gizmos.color = Color.white * cell.LD.Value;
-                        Gizmos.DrawSphere(cell.LD.WorldPos + transform.position,0.1f);
-
-                        Gizmos.color = Color.white * cell.LU.Value;
-                        Gizmos.DrawSphere(cell.LU.WorldPos + transform.position,0.1f);
-
-                        Gizmos.color = Color.white * cell.RD.Value;
-                        Gizmos.DrawSphere(cell.RD.WorldPos+ transform.position,0.1f);
-
-                        Gizmos.color = Color.white * cell.RU.Value;
-                        Gizmos.DrawSphere(cell.RU.WorldPos+ transform.position,0.1f);
+                        Gizmos.color = new Color(vertex.Value,vertex.Value,vertex.Value,1);
+                        Gizmos.DrawSphere(vertex.WorldPos,0.1f);
                     }
                 } 
             }
