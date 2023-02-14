@@ -13,10 +13,10 @@ public class Cell
     {
         int val = 0;
 
-        if(LU.Value > _isoLevel) val += 1;
-        if(RU.Value > _isoLevel) val += 2;
-        if(RD.Value > _isoLevel) val += 4;
-        if(LD.Value > _isoLevel) val += 8;
+        if(LU.Value > _isoLevel) val += 8;
+        if(RU.Value > _isoLevel) val += 4;
+        if(RD.Value > _isoLevel) val += 2;
+        if(LD.Value > _isoLevel) val += 1;
 
         return val;
 
@@ -56,79 +56,67 @@ public class Cell
 
     public List<Vertex> Triangluate()
     {
-        switch (GetCellID())
+        switch (GetCellID()) 
         {
-            // 0 points
             case 0:
-            break;
-            
-            // 1 point
+                break;
+
+            // 1 points:
             case 1:
-            return new List<Vertex>(){ML,MU,LU};
-            break;
-             
+                return new List<Vertex>() {ML, MD,LD};
+                break;
             case 2:
-            return new List<Vertex>(){MR,MU,RU};
-            break;
-
+                return new List<Vertex>() {RD, MD, MR};
+                break;
             case 4:
-            return new List<Vertex>(){MR,MD,RD};
-            break;
-
+                return new List<Vertex>() {RU, MR, MU};
+                break;
             case 8:
-            return new List<Vertex>(){ML,MD,LD};
-            break;
+                return new List<Vertex>() {LU, MU, ML};
+                break;
 
-            // 2 points
+            // 2 points:
             case 3:
-            return new List<Vertex>(){ML,LU,RU,MR};
-            break;
-            
-            case 5:
-            return new List<Vertex>(){ML,LU,MU,MR,RD,MD};
-            break;
-
+                return new List<Vertex>() {MR, RD,LD, ML};
+                break;
             case 6:
-            return new List<Vertex>(){MU,RU,RD,MD};
-            break;
-            
+                return new List<Vertex>() {MU, RU, RD, MD};
+                break;
             case 9:
-            return new List<Vertex>(){LU,MU,MD,LD};
-            break;
-
-            case 10:
-            return new List<Vertex>(){MD,LD,ML,MU,RU,MR};
-            break;
-
+                return new List<Vertex>() {LU, MU, MD,LD};
+                break;
             case 12:
-            return new List<Vertex>(){LD,ML,MR,RD};
-            break;
-
-            //3 points
-            case 7:
-            return new List<Vertex>(){ML,LU,RU,RD,MD};
-            break;
-
-            case 11:
-            return new List<Vertex>(){LD,LU,RU,MR,MD};
-            break;
-
-            case 13:
-            return new List<Vertex>(){LU,MU,MR,RD,LD};
-            break;
+                return new List<Vertex>() {LU, RU, MR, ML};
+                break;
+            case 5:
+                return new List<Vertex>() {MU, RU, MR, MD,LD, ML};
+                break;
+            case 10:
+                return new List<Vertex>() {LU, MU, MR, RD, MD, ML};
+                break;
             
+            // 3 point:
+            case 7:
+                return new List<Vertex>() {MU, RU, RD,LD, ML};
+                break;
+            case 11:
+                return new List<Vertex>() {LU, MU, MR, RD,LD};
+                break;
+            case 13:
+                return new List<Vertex>() {LU, RU, MR, MD,LD};
+                break;
             case 14:
-            return new List<Vertex>(){LD,ML,MU,RU,RD};
-            break;
+                return new List<Vertex>() {LU, RU, RD, MD, ML};
+                break;
 
-            // 4 points
+            // 4 point:
             case 15:
-            return new List<Vertex>(){LU,RU,RD,LD};
-            break;
-
-
-        }
+                return new List<Vertex>() {LU, RU, RD,LD};
+                break;
+            
+		}
 
         return null;
+
     }
 }
