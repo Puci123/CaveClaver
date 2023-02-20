@@ -6,6 +6,7 @@ public class Cell
 {
     public Vertex LU,LD,RU,RD;
     private Vertex MU,ML,MD,MR;
+    private Chunk _chunk;
 
     private float _isoLevel = 0.5f;
 
@@ -38,7 +39,7 @@ public class Cell
         return new Vertex(newPos,1f);
      }
 
-    public Cell(Vertex lu,Vertex ld,Vertex ru,Vertex rd, float isoLevel)
+    public Cell(Vertex lu,Vertex ld,Vertex ru,Vertex rd, float isoLevel, Chunk chunk)
     {
         LU = lu;
         LD = ld;
@@ -51,6 +52,8 @@ public class Cell
         ML = Interpolate(LU,LD);
         MD = Interpolate(LD,RD);
         MR = Interpolate(RU,RD);
+
+        _chunk = chunk;
 
     }
 
@@ -111,6 +114,7 @@ public class Cell
 
             // 4 point:
             case 15:
+                _chunk.AddVerteciesAssCheckec(LU, RU, RD,LD);
                 return new List<Vertex>() {LU, RU, RD,LD};
                 break;
             

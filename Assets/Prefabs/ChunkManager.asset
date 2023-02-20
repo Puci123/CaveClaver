@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50b0cac0c255c414799b6d9da5b608f5, type: 3}
   m_Name: ChunkManager
   m_EditorClassIdentifier: 
-  ViewerPos: {x: -5.8616495, y: 12.344602}
+  ViewerPos: {x: 52.07059, y: 154.01134}
   NoiseOptionsFoldOut: 0
   _chunkSize: {x: 10, y: 10}
   _cellSize: {x: 0.25, y: 0.25}
   _isoLevel: 0.55
   _noise: {fileID: 11400000, guid: bfc3066e21a044d4887eb295db037ba1, type: 2}
   _groundMaterial: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
-  _viewDistance: 20
+  _viewDistance: 30
