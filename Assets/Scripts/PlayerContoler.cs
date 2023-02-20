@@ -6,7 +6,8 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float _walkMaxSpeed = 5f;
-   
+    [SerializeField] private ChunkManager _chunkManager;
+    [SerializeField] private Camera _camera;
 
     private Vector2 _velocity = Vector2.zero;
 
@@ -21,21 +22,33 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        
+        if(_chunkManager != null)
+        {
+            _chunkManager.ClearData();
+            _chunkManager.UpdateVisiableChunks();
+        }
+    
     }
 
     void Update()
-    {
-        //Rotating
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+    {   
 
-         Vector2 dir = new Vector2
-        (
-            mousePos.x - transform.position.x,
-            mousePos.y - transform.position.y
-        ).normalized;
+        //Update visible chunks
+        if(_chunkManager != null)
+        {
+            _chunkManager.ViewerPos = transform.position;
+            _chunkManager.UpdateVisiableChunks();
+        }
+        else
+        {
+            Debug.LogWarning("Chunk menager not assignened");
+        }
+        
+        //Rotation
+        Vector3 dir = Input.mousePosition - Camera.main.WorldToScreenPoint(transform.position);
+        float angle = -Mathf.Atan2(dir.x,dir.y) * Mathf.Rad2Deg + 90;
+        transform.rotation = Quaternion.AngleAxis(angle,Vector3.forward);
 
-        transform.right = dir;
 
         //Movement
         _velocity = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized;
@@ -43,6 +56,6 @@ public class PlayerController : MonoBehaviour
 
         _rb.velocity = _velocity;
         _rb.angularVelocity = 0f;
-
+        _rb.angularVelocity = 0f;
     }
 }

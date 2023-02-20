@@ -127,8 +127,6 @@ public class Chunk : MonoBehaviour
                 }
             }
        }
-
-       Debug.Log(_outlines.Count); 
     }
 
 
@@ -157,7 +155,20 @@ public class Chunk : MonoBehaviour
 
     private void CreateCollider()
     {
-         
+        CalculetMeshOutilines();
+        
+        foreach (List<int> outline in _outlines)
+        {
+            EdgeCollider2D edgeCollider2D = gameObject.AddComponent<EdgeCollider2D>();
+            Vector2[] edgePoints = new Vector2[outline.Count];
+
+            for (int i = 0; i < outline.Count; i++)
+            {
+                edgePoints[i] = _vertices[outline[i]];
+            }
+
+            edgeCollider2D.points = edgePoints;
+        }
     }
 
     public void Points2Mesh(params Vertex[] points)
@@ -236,7 +247,6 @@ public class Chunk : MonoBehaviour
         CreateCollider();
 
 
-        CalculetMeshOutilines();
    } 
 
 
@@ -248,7 +258,7 @@ public class Chunk : MonoBehaviour
             Gizmos.color = Color.gray;
             Gizmos.DrawWireCube(transform.position,_chunkSize);
             
-        
+
             if(_grid != null && _grid.Length > 0)
             {
                 
@@ -258,7 +268,7 @@ public class Chunk : MonoBehaviour
                     if(vertex != null)
                     {
                         Gizmos.color = new Color(vertex.Value,vertex.Value,vertex.Value,1);
-                        Gizmos.DrawSphere(vertex.WorldPos,0.1f);
+                        Gizmos.DrawSphere(vertex.WorldPos + transform.position,0.1f);
                     }
                 } 
             }
@@ -270,11 +280,11 @@ public class Chunk : MonoBehaviour
                 {
                     for (int i = 0; i < list.Count - 1; i++)
                     {
-                        Gizmos.DrawSphere(_vertices[list[i]],0.1f);
-                        Gizmos.DrawLine(_vertices[list[i]], _vertices[list[i + 1]]);
+                        Gizmos.DrawSphere(_vertices[list[i]] + transform.position,0.1f);
+                        Gizmos.DrawLine(_vertices[list[i]] + transform.position, _vertices[list[i + 1]] + transform.position);
                     }
                     
-                    Gizmos.DrawSphere(_vertices[list[list.Count - 1]],0.1f);
+                    Gizmos.DrawSphere(_vertices[list[list.Count - 1]] + transform.position,0.1f);
                 }
             }
 
