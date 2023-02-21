@@ -22,6 +22,7 @@ public class Chunk : MonoBehaviour
 
     private Mesh _mesh;
     private Material _material;
+    private Material _floorMaterial;
 
     private Dictionary<int, List<Triangle>> _tringleDicitinery = new Dictionary<int, List<Triangle>>();
     private HashSet<int> checkedVertecies = new HashSet<int>();
@@ -130,13 +131,14 @@ public class Chunk : MonoBehaviour
     }
 
 
-    public void SetUp(Vector2 chunkSize, Vector2 cellSize, float isoLevel, LayeredPerlinNoise noise,Material material)
+    public void SetUp(Vector2 chunkSize, Vector2 cellSize, float isoLevel, LayeredPerlinNoise noise,Material material, Material floorMaterial)
     {
         _chunkSize = chunkSize;
         _cellSize = cellSize;
         _isoLevel = isoLevel;
         _noise = noise;
         _material = material;
+        _floorMaterial = floorMaterial;
 
         GetComponent<MeshRenderer>().material = material;
     }
@@ -187,6 +189,54 @@ public class Chunk : MonoBehaviour
             ConstructTriangle(points[0],points[4],points[5]);
 
         
+    }
+
+    public void CreateFloor()
+    {
+        GameObject floor = new GameObject();
+        floor.transform.parent = transform; 
+        floor.transform.localPosition = new Vector3(0,0,5);
+        floor.transform.name = "Floor";
+
+        floor.AddComponent<MeshRenderer>().material = _floorMaterial;
+        MeshFilter meshFilter =  floor.AddComponent<MeshFilter>();
+
+        Mesh mesh = new Mesh();
+        mesh.name = "floor";
+
+        List<Vector3> vertecies = new List<Vector3>();
+        List<int> trianlges = new List<int>();
+        int index = 0;
+
+        for (int x = 0; x < _gridSize.x - 1; x++)
+        {
+            for (int y = 0; y < _gridSize.y - 1; y++)
+            {
+                vertecies.Add(_grid[x,y].WorldPos);
+                vertecies.Add(_grid[x,y + 1].WorldPos);
+                vertecies.Add(_grid[x + 1,y].WorldPos);
+
+                vertecies.Add(_grid[x,y + 1].WorldPos);
+                vertecies.Add(_grid[x + 1,y + 1].WorldPos);
+                vertecies.Add(_grid[x + 1, y].WorldPos);
+                
+                trianlges.Add(index);
+                trianlges.Add(index + 1);
+                trianlges.Add(index + 2);
+                trianlges.Add(index + 3);
+                trianlges.Add(index + 4);
+                trianlges.Add(index + 5);
+
+                index += 6;
+
+            }   
+        }
+
+        mesh.vertices = vertecies.ToArray();
+        mesh.triangles = trianlges.ToArray();
+        mesh.RecalculateNormals();
+
+        meshFilter.mesh = mesh;
     }
 
    public void CreateChunk()
@@ -245,10 +295,9 @@ public class Chunk : MonoBehaviour
         _mesh.RecalculateNormals();
 
         CreateCollider();
-
+        CreateFloor();
 
    } 
-
 
 
    private void OnDrawGizmos() 

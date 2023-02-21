@@ -14,6 +14,8 @@ public class ChunkManager : ScriptableObject
     [SerializeField, Range(0,1)] private float _isoLevel = 0.5f;
     [SerializeField] private LayeredPerlinNoise _noise;
     [SerializeField] private Material _groundMaterial;
+    [SerializeField] private Material _floorMaterial;
+
     [SerializeField] private float _viewDistance = 50f;
 
     private List<GameObject> _chunksVisibleLastFrame = new List<GameObject>();
@@ -54,7 +56,7 @@ public class ChunkManager : ScriptableObject
         
         GameObject chunk = new GameObject();
         chunk.transform.position = pos;
-        chunk.AddComponent<Chunk>().SetUp(_chunkSize,_cellSize,_isoLevel,_noise,_groundMaterial);
+        chunk.AddComponent<Chunk>().SetUp(_chunkSize,_cellSize,_isoLevel,_noise,_groundMaterial,_floorMaterial);
         chunk.GetComponent<Chunk>().CreateChunk();
         chunk.transform.parent = _map;
         chunk.transform.name = "Chunk: " + cord.x + " : " + cord.y;
