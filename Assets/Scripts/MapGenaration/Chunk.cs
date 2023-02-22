@@ -120,7 +120,7 @@ public class Chunk : MonoBehaviour
                 int newOutlineVertex = GetConnectedOutlineVertex(vertexIndex);
                 if(newOutlineVertex != - 1)
                 {
-                    checkedVertecies.Add(vertexIndex);
+                    //checkedVertecies.Add(vertexIndex);
                     List<int> newOutline = new List<int>();
                     newOutline.Add(vertexIndex);
                     _outlines.Add(newOutline);
