@@ -8,10 +8,5 @@ public class ChunkEditor : Editor {
         base.OnInspectorGUI();
         Chunk chunk = (Chunk)(target);
 
-        if(GUILayout.Button("Generate Chunk"))
-        {
-            chunk.CreateChunk();
-        }
-        
     }
 }

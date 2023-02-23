@@ -56,8 +56,7 @@ public class ChunkManager : ScriptableObject
         
         GameObject chunk = new GameObject();
         chunk.transform.position = pos;
-        chunk.AddComponent<Chunk>().SetUp(_chunkSize,_cellSize,_isoLevel,_noise,_groundMaterial,_floorMaterial);
-        chunk.GetComponent<Chunk>().CreateChunk();
+        chunk.AddComponent<Chunk>().CreateChunk(CreateValueMap(pos),_groundMaterial,_cellSize.x);
         chunk.transform.parent = _map;
         chunk.transform.name = "Chunk: " + cord.x + " : " + cord.y;
         
@@ -93,8 +92,8 @@ public class ChunkManager : ScriptableObject
 
                 if(!_chunks.ContainsKey(chunkCord))
                 {
-                    CreateChunk(new Vector3(chunkCord.x * _chunkSize.x, 
-                                            chunkCord.y * _chunkSize.y, 0),
+                    CreateChunk(new Vector3(chunkCord.x * (_chunkSize.x - _cellSize.x), 
+                                            chunkCord.y * (_chunkSize.y - _cellSize.y), 0),
                                             chunkCord);
                 }
                 else
@@ -106,4 +105,24 @@ public class ChunkManager : ScriptableObject
         }
 
     }    
+
+    private int[,] CreateValueMap(Vector3 pos)
+    {
+        int gridSizeX = Mathf.RoundToInt(_chunkSize.x / _cellSize.x);
+        int gridSizeY = Mathf.RoundToInt(_chunkSize.y / _cellSize.y);
+        int[,] valueMap = new int[gridSizeX,gridSizeY];
+
+
+        for (int x = 0; x < gridSizeX; x++)
+        {
+            for (int y = 0; y < gridSizeY; y++)
+            {
+                valueMap[x,y] = _noise.GetNoiseValue(pos.x + x * _cellSize.x, pos.y + y * _cellSize.y) > _isoLevel ? 1 : 0;
+            }
+        }
+
+        return valueMap;
+
+    }
+
 }
