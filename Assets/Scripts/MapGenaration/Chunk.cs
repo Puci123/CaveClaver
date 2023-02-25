@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-[RequireComponent(typeof(MeshFilter),typeof(MeshRenderer))]
 public class Chunk : MonoBehaviour
 {
 
@@ -16,6 +15,8 @@ public class Chunk : MonoBehaviour
     private Dictionary<int,List<Triangle>> _triangleDictionary = new Dictionary<int, List<Triangle>>();    
     private List<List<int>> _outlines = new List<List<int>>();
     private HashSet<int> _checkedVertecies = new HashSet<int>();
+
+    private Transform _chunkTop;
 
     [SerializeField] private bool _drawGizmos = false;
 
@@ -278,6 +279,27 @@ public class Chunk : MonoBehaviour
         }
     }
 
+    public void CreateCollider()
+    {
+
+        CalculateMeshOutline();
+
+        foreach (List<int> outline in _outlines)
+        {
+            EdgeCollider2D edgeCollider2D = _chunkTop.gameObject.AddComponent<EdgeCollider2D>();
+            Vector2[] edgePoints = new Vector2[outline.Count];
+            
+            for (int i = 0; i < outline.Count; i++)
+            {
+                edgePoints[i] = _vertcies[outline[i]];    
+            }
+
+            edgeCollider2D.points = edgePoints;
+        } 
+
+    }
+
+
     public void Points2Mesh(params Node[] points)
     {
         AssigineVertecies(points);
@@ -369,28 +391,60 @@ public class Chunk : MonoBehaviour
         }
 
         Mesh mesh = new Mesh();
-        mesh.name = "Chunk mesh";
+        mesh.name = "Chunk mesh top";
         
-        GetComponent<MeshFilter>().mesh = mesh;
-        GetComponent<MeshRenderer>().material = material;
+       
+
+        _chunkTop.gameObject.AddComponent<MeshFilter>().mesh = mesh;
+        _chunkTop.gameObject.AddComponent<MeshRenderer>().material = material;
 
         mesh.vertices = _vertcies.ToArray();
         mesh.triangles = _triangles.ToArray();
         mesh.RecalculateNormals();
    }
 
+    public void CreateFloor(Material floorMaterial)
+    {
+        Mesh floorMesh = new Mesh();
+        floorMesh.name = "floor mesh";
 
-    public void CreateChunk(int [,] valueMap,Material topMaterial,float squareSize)
+        Vector3[] floorVertecies = new Vector3[4];
+        int[] floorTriangles = {0,3,1,3,2,1};
+
+        floorVertecies[0] = _squareGrid._squares[0,0]._bottomLeft._position;
+        floorVertecies[1] = _squareGrid._squares[_squareGrid.GridSizeX - 1,0]._bottomRight._position;
+        floorVertecies[2] = _squareGrid._squares[_squareGrid.GridSizeX - 1,_squareGrid.gridSizeY - 1]._topRight._position;
+        floorVertecies[3] = _squareGrid._squares[0,_squareGrid.gridSizeY - 1]._topLeft._position;
+
+        floorMesh.vertices  = floorVertecies;
+        floorMesh.triangles = floorTriangles;
+        floorMesh.RecalculateNormals();
+
+        GameObject floor = new GameObject("Chunk floor");
+        floor.transform.parent = transform;
+        floor.transform.localPosition = new Vector3(0,0,10);
+        floor.AddComponent<MeshFilter>().mesh = floorMesh;
+        floor.AddComponent<MeshRenderer>().material = floorMaterial;
+
+    }
+
+    public void CreateChunk(int [,] valueMap,Material topMaterial,Material floorMaterial,float squareSize)
     {
         _squareGrid = new SquareGrid(valueMap,squareSize);
         _checkedVertecies.Clear();
         _outlines.Clear();
         _triangleDictionary.Clear();
-     
+
+        _chunkTop = new GameObject("Chunk top").transform;
+        _chunkTop.parent = transform;
+        _chunkTop.localPosition = Vector3.zero;
+
         CreateMesh(topMaterial);
-        CalculateMeshOutline();
+        CreateFloor(floorMaterial);
+        CreateCollider();
 
         Debug.Log("Chunk created");
+
       
     }
 

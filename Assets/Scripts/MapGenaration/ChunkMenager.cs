@@ -56,7 +56,7 @@ public class ChunkManager : ScriptableObject
         
         GameObject chunk = new GameObject();
         chunk.transform.position = pos;
-        chunk.AddComponent<Chunk>().CreateChunk(CreateValueMap(pos),_groundMaterial,_cellSize.x);
+        chunk.AddComponent<Chunk>().CreateChunk(CreateValueMap(pos),_groundMaterial,_floorMaterial,_cellSize.x);
         chunk.transform.parent = _map;
         chunk.transform.name = "Chunk: " + cord.x + " : " + cord.y;
         
@@ -78,7 +78,6 @@ public class ChunkManager : ScriptableObject
             item.SetActive(false);
         }
         _chunksVisibleLastFrame.Clear();
-
 
         int chunksInRange = Mathf.RoundToInt(_viewDistance / _chunkSize.x);
         int currentChunkCordX = Mathf.RoundToInt(ViewerPos.x / _chunkSize.x);
