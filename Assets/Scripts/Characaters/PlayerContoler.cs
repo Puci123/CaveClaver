@@ -7,14 +7,36 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float _walkMaxSpeed = 5f;
     [SerializeField] private ChunkManager _chunkManager;
-    [SerializeField] private Camera _camera;
 
+    //Drill Test only
+    [SerializeField] private LayerMask _groundMask;
+    [SerializeField] private float _range;
+
+    //
     private Vector2 _velocity = Vector2.zero;
 
     private Rigidbody2D _rb;
     private Animator _anim;
     private Camera _viewCamera;
+    private Vector3 _forward;
 
+    private void Maining()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, _forward,_range,_groundMask);
+
+        if(hit.collider != null)
+        {
+            Debug.DrawLine(transform.position,hit.point,Color.red);
+
+            if(Input.GetMouseButtonDown(0))
+            {
+                Chunk.ControlNode node = _chunkManager.GetNodeFromWorldPoint(hit.point);
+                node._active = false;
+                
+                _chunkManager.RecreateChunkMesh(hit.point);
+            }
+        }
+    }
 
     private void Movement()
     {
@@ -30,8 +52,8 @@ public class PlayerController : MonoBehaviour
         }
         
         //Rotation
-        Vector3 dir = Input.mousePosition - _viewCamera.WorldToScreenPoint(transform.position);
-        float angle = -Mathf.Atan2(dir.x,dir.y) * Mathf.Rad2Deg + 90;
+        _forward = (Input.mousePosition - _viewCamera.WorldToScreenPoint(transform.position)).normalized;
+        float angle = -Mathf.Atan2(_forward.x,_forward.y) * Mathf.Rad2Deg + 90;
         transform.rotation = Quaternion.AngleAxis(angle,Vector3.forward);
 
 
@@ -42,6 +64,8 @@ public class PlayerController : MonoBehaviour
         _rb.velocity = _velocity;
         _rb.angularVelocity = 0f;
         _rb.angularVelocity = 0f;
+
+        Maining();
     }
 
 

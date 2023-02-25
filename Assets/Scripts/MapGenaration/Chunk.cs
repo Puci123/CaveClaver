@@ -19,6 +19,9 @@ public class Chunk : MonoBehaviour
     private Transform _chunkTop;
 
     [SerializeField] private bool _drawGizmos = false;
+    // Temporary
+    ControlNode _pointingAtTemp;
+
 
     public class Node
     {
@@ -80,6 +83,7 @@ public class Chunk : MonoBehaviour
     public class SquareGrid
     {
         public Square[,] _squares;
+        public float _squareSize;
 
         public int GridSizeX
         {
@@ -94,6 +98,8 @@ public class Chunk : MonoBehaviour
 
         public SquareGrid(int [,] map, float squareSize)
         {
+            _squareSize = squareSize;
+
             int gridSizeX = map.GetLength(0);
             int gridSizeY = map.GetLength(1);
             float mapWidth = squareSize * gridSizeX;
@@ -121,6 +127,51 @@ public class Chunk : MonoBehaviour
             }
 
 
+        }
+
+        public Square GetSquareFromWorldPoint(Vector3 worldPoint)
+        {
+            float percentX = Mathf.Clamp01((worldPoint.x + 0.5f * GridSizeX * _squareSize)/ (GridSizeX * _squareSize));
+            float percentY = Mathf.Clamp01((worldPoint.y + 0.5f * gridSizeY * _squareSize)/ (gridSizeY * _squareSize)); 
+            
+            int xCord = Mathf.RoundToInt(percentX * (GridSizeX - 1));
+            int yCord = Mathf.RoundToInt(percentY * (gridSizeY - 1));
+
+            return _squares[xCord,yCord];
+        }
+
+        public ControlNode GetActiveNodeFromWorldPoint(Vector3 worldPoint)
+        {
+            Square square = GetSquareFromWorldPoint(worldPoint);
+            ControlNode closest = null;
+            float distance = Mathf.Infinity;
+
+            if(Vector2.Distance(square._topLeft._position,worldPoint) < distance && square._topLeft._active)
+            {
+                closest = square._topLeft;
+                distance = Vector2.Distance(square._topLeft._position,closest._position);
+            }
+
+            if(Vector2.Distance(square._topRight._position,worldPoint) < distance && square._topRight._active)
+            {
+                closest = square._topRight;
+                distance = Vector2.Distance(square._topRight._position,closest._position);
+            }
+
+            if(Vector2.Distance(square._bottomRight._position,worldPoint) < distance && square._bottomRight._active)
+            {
+                closest = square._bottomRight;
+                distance = Vector2.Distance(square._bottomRight._position,closest._position);
+            }
+
+            if(Vector2.Distance(square._bottomLeft._position,worldPoint) < distance && square._bottomLeft._active)
+            {
+                closest = square._bottomLeft;
+                distance = Vector2.Distance(square._bottomLeft._position,closest._position);
+            }
+
+
+            return closest;
         }
     }
 
@@ -240,7 +291,6 @@ public class Chunk : MonoBehaviour
                     }
                 }
             }
-
         }
 
         return -1;
@@ -430,6 +480,14 @@ public class Chunk : MonoBehaviour
 
     public void CreateChunk(int [,] valueMap,Material topMaterial,Material floorMaterial,float squareSize)
     {
+        if(transform.childCount > 0)
+        {
+            foreach (Transform child in transform)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
         _squareGrid = new SquareGrid(valueMap,squareSize);
         _checkedVertecies.Clear();
         _outlines.Clear();
@@ -445,11 +503,25 @@ public class Chunk : MonoBehaviour
 
         Debug.Log("Chunk created");
 
-      
+    }
+
+    public ControlNode DigInChunk(Vector3 hitPos)
+    {
+      _pointingAtTemp = _squareGrid.GetActiveNodeFromWorldPoint(transform.InverseTransformPoint(hitPos));
+      return _pointingAtTemp;
+    }
+
+    public void ReconsctructChunkMesh()
+    {
+        // TO DO: RECUNSTRING MESH !!
     }
 
     private void OnDrawGizmos() 
     {
+
+        Gizmos.color = Color.magenta;
+        if(_pointingAtTemp != null)
+            Gizmos.DrawCube(_pointingAtTemp._position + transform.position, Vector3.one * 0.2f);
 
         if(_drawGizmos)
         {

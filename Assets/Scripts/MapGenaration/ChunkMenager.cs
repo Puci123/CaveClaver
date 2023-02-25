@@ -105,6 +105,18 @@ public class ChunkManager : ScriptableObject
 
     }    
 
+    public Chunk.ControlNode GetNodeFromWorldPoint(Vector3 hitPos)
+    {
+        Vector2Int chunkCord = new Vector2Int( Mathf.RoundToInt(hitPos.x / _chunkSize.x),Mathf.RoundToInt(hitPos.y / _chunkSize.y));
+        return _chunks[chunkCord].DigInChunk(hitPos);
+    }
+
+    public void RecreateChunkMesh(Vector3 hitPos)
+    {
+        Vector2Int chunkCord = new Vector2Int( Mathf.RoundToInt(hitPos.x / _chunkSize.x),Mathf.RoundToInt(hitPos.y / _chunkSize.y));
+        _chunks[chunkCord].ReconsctructChunkMesh();
+    }
+
     private int[,] CreateValueMap(Vector3 pos)
     {
         int gridSizeX = Mathf.RoundToInt(_chunkSize.x / _cellSize.x);
