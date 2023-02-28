@@ -114,7 +114,7 @@ public class ChunkManager : ScriptableObject
     public void RecreateChunkMesh(Vector3 hitPos)
     {
         Vector2Int chunkCord = new Vector2Int( Mathf.RoundToInt(hitPos.x / _chunkSize.x),Mathf.RoundToInt(hitPos.y / _chunkSize.y));
-        _chunks[chunkCord].ReconsctructChunkMesh();
+        _chunks[chunkCord].ReconsctructChunkMesh(_groundMaterial,_floorMaterial);
     }
 
     private int[,] CreateValueMap(Vector3 pos)

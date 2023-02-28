@@ -78,6 +78,19 @@ public class Chunk : MonoBehaviour
             return config;
 
         }
+
+        public void ClearNodeIndecies()
+        {
+            _topLeft._vertexIndex = -1;
+            _middleTop._vertexIndex = -1;
+            _topRight._vertexIndex = -1;
+            _middleRight._vertexIndex  = -1;
+            _bottomRight._vertexIndex = -1;
+            _middleDown._vertexIndex = -1;
+            _bottomLeft._vertexIndex = -1;
+            _middleLeft._vertexIndex = -1;
+
+        }
     }
 
     public class SquareGrid
@@ -443,7 +456,7 @@ public class Chunk : MonoBehaviour
         Mesh mesh = new Mesh();
         mesh.name = "Chunk mesh top";
         
-       
+       Debug.Log("Created mesh with: " + _vertcies.Count + " vertecies and " + _triangles.Count + "triangles");
 
         _chunkTop.gameObject.AddComponent<MeshFilter>().mesh = mesh;
         _chunkTop.gameObject.AddComponent<MeshRenderer>().material = material;
@@ -511,9 +524,32 @@ public class Chunk : MonoBehaviour
       return _pointingAtTemp;
     }
 
-    public void ReconsctructChunkMesh()
+    public void ReconsctructChunkMesh(Material topMaterial, Material floorMaterial)
     {
+        foreach (Transform child in transform)
+        {
+                Destroy(child.gameObject);
+        }
+
+        _chunkTop = new GameObject("Chunk top").transform;
+        _chunkTop.parent = transform;
+        _chunkTop.localPosition = Vector3.zero;
+
+        foreach (Square square in _squareGrid._squares)
+        {
+            square.ClearNodeIndecies();
+        }
+
+
         // TO DO: RECUNSTRING MESH !!
+        _outlines.Clear();
+        _triangleDictionary.Clear();
+        _checkedVertecies.Clear();
+
+        CreateMesh(topMaterial);
+        CreateFloor(floorMaterial);
+        CreateCollider();
+
     }
 
     private void OnDrawGizmos() 
