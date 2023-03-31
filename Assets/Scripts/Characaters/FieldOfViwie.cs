@@ -10,6 +10,8 @@ public class FieldOfViwie : MonoBehaviour
     [SerializeField] private LayerMask _blockLight;
     [SerializeField] private float _resolution = 0.25f;
     [SerializeField] private MeshFilter _meshFilter;
+    
+    [SerializeField] private float penetration = 0.5f;
 
     private Mesh _mesh;
 
@@ -40,7 +42,10 @@ public class FieldOfViwie : MonoBehaviour
         
         if(hit.collider != null)
         {
-            return new ViewCastInfo(true,hit.point,hit.distance,globalAngle);
+            ViewCastInfo temp = new ViewCastInfo(true,hit.point,hit.distance,globalAngle);
+            temp._point += dir * penetration;
+
+            return temp; 
         }
 
         return new ViewCastInfo(false,transform.position + _viewRadius * dir,_viewRadius,globalAngle);
@@ -59,7 +64,7 @@ public class FieldOfViwie : MonoBehaviour
             ViewCastInfo newViewCast = ViewCast(angle);
 
             vivePoints.Add(newViewCast._point);
-            Debug.DrawLine(transform.position,newViewCast._point,Color.cyan);
+           // Debug.DrawLine(transform.position,newViewCast._point,Color.cyan);
 
         }
 
@@ -96,6 +101,7 @@ public class FieldOfViwie : MonoBehaviour
 
     private void LateUpdate() 
     {
+        Debug.Log("casting");
         DrawFOW();    
     }
 

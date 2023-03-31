@@ -31,9 +31,11 @@ public class PlayerController : MonoBehaviour
             if(Input.GetMouseButtonDown(0))
             {
                 Chunk.ControlNode node = _chunkManager.GetNodeFromWorldPoint(hit.point);
-                node._active = false;
-                
-                _chunkManager.RecreateChunkMesh(hit.point);
+                if(node != null)
+                {
+                    node._active = false;    
+                    _chunkManager.RecreateChunkMesh(hit.point);
+                }
             }
         }
     }

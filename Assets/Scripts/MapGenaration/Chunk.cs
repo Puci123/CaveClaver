@@ -332,10 +332,10 @@ public class Chunk : MonoBehaviour
                 {
                     List<int> newOutline = new List<int>();
                     newOutline.Add(vertexIndex);
+                    _checkedVertecies.Add(vertexIndex);
                     _outlines.Add(newOutline);
                     FollowOutline(newVertexIndex,_outlines.Count - 1);
-
-                    _checkedVertecies.Add(vertexIndex);
+                    newOutline.Add(vertexIndex);
                 }
 
             }
@@ -540,8 +540,6 @@ public class Chunk : MonoBehaviour
             square.ClearNodeIndecies();
         }
 
-
-        // TO DO: RECUNSTRING MESH !!
         _outlines.Clear();
         _triangleDictionary.Clear();
         _checkedVertecies.Clear();
