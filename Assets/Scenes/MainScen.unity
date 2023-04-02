@@ -123,6 +123,83 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1001 &10241446
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 6140022065892379388, guid: 68c4102374f2bbe44b89754a0aa1c3c5, type: 3}
+      propertyPath: _player
+      value: 
+      objectReference: {fileID: 1784136415}
+    - target: {fileID: 6140022065892379388, guid: 68c4102374f2bbe44b89754a0aa1c3c5, type: 3}
+      propertyPath: _obstacles.m_Bits
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6140022065892379389, guid: 68c4102374f2bbe44b89754a0aa1c3c5, type: 3}
+      propertyPath: m_Name
+      value: Enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 6140022065892379389, guid: 68c4102374f2bbe44b89754a0aa1c3c5, type: 3}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6140022065892379389, guid: 68c4102374f2bbe44b89754a0aa1c3c5, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6140022065892379390, guid: 68c4102374f2bbe44b89754a0aa1c3c5, type: 3}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6140022065892379390, guid: 68c4102374f2bbe44b89754a0aa1c3c5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.0466166
+      objectReference: {fileID: 0}
+    - target: {fileID: 6140022065892379390, guid: 68c4102374f2bbe44b89754a0aa1c3c5, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.27
+      objectReference: {fileID: 0}
+    - target: {fileID: 6140022065892379390, guid: 68c4102374f2bbe44b89754a0aa1c3c5, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6140022065892379390, guid: 68c4102374f2bbe44b89754a0aa1c3c5, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6140022065892379390, guid: 68c4102374f2bbe44b89754a0aa1c3c5, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6140022065892379390, guid: 68c4102374f2bbe44b89754a0aa1c3c5, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6140022065892379390, guid: 68c4102374f2bbe44b89754a0aa1c3c5, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6140022065892379390, guid: 68c4102374f2bbe44b89754a0aa1c3c5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6140022065892379390, guid: 68c4102374f2bbe44b89754a0aa1c3c5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6140022065892379390, guid: 68c4102374f2bbe44b89754a0aa1c3c5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 68c4102374f2bbe44b89754a0aa1c3c5, type: 3}
 --- !u!1 &187353519
 GameObject:
   m_ObjectHideFlags: 0
@@ -561,7 +638,7 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: 7535a3adfb0cb49488fbfc82a26b896e, type: 2}
     - target: {fileID: 5310877456154427923, guid: 9effe15d22cafe84681a78c463f79480, type: 3}
       propertyPath: _groundMask.m_Bits
-      value: 1
+      value: 64
       objectReference: {fileID: 0}
     - target: {fileID: 5310877456154428015, guid: 9effe15d22cafe84681a78c463f79480, type: 3}
       propertyPath: m_Name
@@ -610,7 +687,7 @@ MonoBehaviour:
   _viewRadius: 5
   _blockLight:
     serializedVersion: 2
-    m_Bits: 51
+    m_Bits: 1
   _resolution: 20
   _meshFilter: {fileID: 310963053}
   penetration: 0.11

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50b0cac0c255c414799b6d9da5b608f5, type: 3}
   m_Name: ChunkManager
   m_EditorClassIdentifier: 
-  ViewerPos: {x: -33.069412, y: -37.406094}
+  ViewerPos: {x: -59.67501, y: 8.038029}
   NoiseOptionsFoldOut: 0
   _chunkSize: {x: 10, y: 10}
   _cellSize: {x: 0.25, y: 0.25}
@@ -20,4 +20,7 @@ MonoBehaviour:
   _noise: {fileID: 11400000, guid: bfc3066e21a044d4887eb295db037ba1, type: 2}
   _groundMaterial: {fileID: 2100000, guid: 388af62077785b349af9f41faf76c60f, type: 2}
   _floorMaterial: {fileID: 2100000, guid: c50e4ac52d702f74184c18eb53b81a1a, type: 2}
+  _gorundMask:
+    serializedVersion: 2
+    m_Bits: 64
   _viewDistance: 30

@@ -15,7 +15,7 @@ public class ChunkManager : ScriptableObject
     [SerializeField] private LayeredPerlinNoise _noise;
     [SerializeField] private Material _groundMaterial;
     [SerializeField] private Material _floorMaterial;
-
+    [SerializeField] private LayerMask _gorundMask;
     [SerializeField] private float _viewDistance = 50f;
 
     private List<GameObject> _chunksVisibleLastFrame = new List<GameObject>();
